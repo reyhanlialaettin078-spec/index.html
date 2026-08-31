@@ -1,0 +1,3339 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f97316">
+<meta name="description" content="HesaplaTR - Yemek, reçete, kalori, menü ve depo yönetim sistemi">
+<title>HesaplaTR | Profesyonel Yemek Yönetimi</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+ --orange:#f97316;
+ --orange2:#ea580c;
+ --orange3:#fff7ed;
+ --bg:#f5f5f4;
+ --card:#fff;
+ --text:#18181b;
+ --muted:#71717a;
+ --border:#e4e4e7;
+ --sidebar:#18181b;
+ --danger:#dc2626;
+ --success:#16a34a;
+ --warning:#d97706;
+}
+body.dark{
+ --bg:#18181b;
+ --card:#27272a;
+ --text:#fafafa;
+ --muted:#a1a1aa;
+ --border:#3f3f46;
+ --orange3:#3f2517;
+ --sidebar:#09090b;
+}
+body{
+ font-family:Inter,Arial,sans-serif;
+ background:var(--bg);
+ color:var(--text);
+ min-height:100vh;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+.auth{
+ min-height:100vh;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:20px;
+ background:
+ radial-gradient(circle at 10% 10%,#fed7aa 0,transparent 30%),
+ radial-gradient(circle at 90% 90%,#ffedd5 0,transparent 30%),
+ var(--bg);
+}
+.auth-box{
+ width:min(440px,100%);
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:24px;
+ padding:30px;
+ box-shadow:0 25px 70px #0002;
+}
+.brand{
+ text-align:center;
+ font-size:32px;
+ font-weight:900;
+}
+.brand span{color:var(--orange)}
+.auth-desc{
+ text-align:center;
+ color:var(--muted);
+ margin:8px 0 25px;
+}
+.tabs{
+ display:flex;
+ padding:4px;
+ background:var(--bg);
+ border-radius:12px;
+ margin-bottom:20px;
+}
+.tabs button{
+ flex:1;
+ border:0;
+ background:transparent;
+ padding:11px;
+ border-radius:9px;
+ color:var(--muted);
+}
+.tabs button.active{
+ background:var(--card);
+ color:var(--text);
+ box-shadow:0 2px 8px #0001;
+}
+.field{margin-bottom:15px}
+label{
+ display:block;
+ font-size:13px;
+ font-weight:700;
+ margin-bottom:7px;
+}
+input,select,textarea{
+ width:100%;
+ border:1px solid var(--border);
+ background:var(--card);
+ color:var(--text);
+ padding:12px;
+ border-radius:10px;
+ outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--orange)}
+textarea{min-height:110px;resize:vertical}
+
+.btn{
+ border:0;
+ background:var(--orange);
+ color:white;
+ padding:11px 16px;
+ border-radius:10px;
+ font-weight:700;
+}
+.btn:hover{background:var(--orange2)}
+.btn.dark{background:#3f3f46}
+.btn.red{background:var(--danger)}
+.btn.green{background:var(--success)}
+.btn.small{padding:7px 10px;font-size:12px}
+.full{width:100%}
+
+.auth-info{
+ background:var(--orange3);
+ border:1px solid #fed7aa;
+ padding:12px;
+ border-radius:10px;
+ color:var(--muted);
+ font-size:12px;
+ margin-top:15px;
+}
+
+.sidebar{
+ position:fixed;
+ top:0;
+ bottom:0;
+ left:0;
+ width:250px;
+ background:var(--sidebar);
+ color:white;
+ z-index:1000;
+ padding:18px 13px;
+ overflow-y:auto;
+}
+.logo{
+ font-size:24px;
+ font-weight:900;
+ text-align:center;
+ padding:12px 0 25px;
+}
+.logo span{color:#fb923c}
+.menu-title{
+ color:#a1a1aa;
+ font-size:10px;
+ letter-spacing:1.2px;
+ margin:18px 8px 7px;
+ text-transform:uppercase;
+}
+.nav button{
+ width:100%;
+ border:0;
+ background:transparent;
+ color:#d4d4d8;
+ padding:11px;
+ border-radius:9px;
+ text-align:left;
+ margin:2px 0;
+}
+.nav button:hover,.nav button.active{
+ background:#3f3f46;
+ color:white;
+}
+.main{margin-left:250px;min-height:100vh}
+.topbar{
+ height:70px;
+ background:var(--card);
+ border-bottom:1px solid var(--border);
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 24px;
+ position:sticky;
+ top:0;
+ z-index:500;
+}
+.menu-toggle{
+ display:none;
+ border:0;
+ background:none;
+ color:var(--text);
+ font-size:25px;
+}
+.top-right{
+ display:flex;
+ align-items:center;
+ gap:8px;
+}
+.icon{
+ width:40px;
+ height:40px;
+ border:1px solid var(--border);
+ background:var(--card);
+ color:var(--text);
+ border-radius:10px;
+}
+.avatar{
+ width:40px;
+ height:40px;
+ border-radius:50%;
+ background:var(--orange);
+ color:white;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-weight:900;
+ overflow:hidden;
+}
+.avatar img{width:100%;height:100%;object-fit:cover}
+
+.content{
+ max-width:1500px;
+ margin:auto;
+ padding:25px;
+}
+.page{display:none}
+.page.active{display:block;animation:show .2s}
+@keyframes show{
+ from{opacity:0;transform:translateY(5px)}
+ to{opacity:1;transform:none}
+}
+h1{font-size:29px;margin-bottom:5px}
+.subtitle{color:var(--muted);margin-bottom:20px}
+
+.grid{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:16px;
+}
+.grid3{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:16px;
+}
+.card{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:16px;
+ padding:20px;
+ margin-bottom:17px;
+}
+.stat .label{color:var(--muted);font-size:13px}
+.stat .num{font-size:29px;font-weight:900;margin:7px 0}
+
+.hero{
+ background:linear-gradient(135deg,#ea580c,#fb923c);
+ color:white;
+ padding:27px;
+ border-radius:19px;
+ margin-bottom:18px;
+}
+.hero p{margin-top:7px;color:#ffedd5}
+
+.tool{
+ cursor:pointer;
+ transition:.2s;
+}
+.tool:hover{
+ transform:translateY(-3px);
+ box-shadow:0 12px 30px #0001;
+}
+.tool-icon{
+ width:50px;
+ height:50px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ background:var(--orange3);
+ border-radius:13px;
+ font-size:23px;
+ margin-bottom:13px;
+}
+.tool p{color:var(--muted);margin-top:6px;line-height:1.5}
+
+.form-grid{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:14px;
+}
+.form-grid3{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:14px;
+}
+.actions{
+ display:flex;
+ gap:8px;
+ flex-wrap:wrap;
+ margin-top:12px;
+}
+
+.table-wrap{overflow-x:auto}
+table{
+ width:100%;
+ border-collapse:collapse;
+}
+th,td{
+ padding:12px 9px;
+ border-bottom:1px solid var(--border);
+ text-align:left;
+ vertical-align:middle;
+}
+th{font-size:12px;color:var(--muted)}
+.empty{
+ text-align:center;
+ padding:30px;
+ color:var(--muted);
+}
+
+.badge{
+ display:inline-block;
+ padding:4px 9px;
+ border-radius:30px;
+ font-size:11px;
+ font-weight:800;
+}
+.badge.green{background:#dcfce7;color:#166534}
+.badge.red{background:#fee2e2;color:#991b1b}
+.badge.orange{background:#ffedd5;color:#9a3412}
+
+.search{
+ margin-bottom:15px;
+}
+.recipe-grid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:16px;
+}
+.recipe-card{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:16px;
+ overflow:hidden;
+ transition:.2s;
+}
+.recipe-card:hover{
+ transform:translateY(-3px);
+ box-shadow:0 12px 30px #0001;
+}
+.recipe-head{
+ padding:17px;
+ background:linear-gradient(135deg,var(--orange3),var(--card));
+ border-bottom:1px solid var(--border);
+}
+.recipe-head h3{margin-bottom:5px}
+.recipe-head p{font-size:12px;color:var(--muted)}
+.recipe-body{padding:17px}
+.ingredients{
+ list-style:none;
+}
+.ingredients li{
+ padding:7px 0;
+ border-bottom:1px dashed var(--border);
+ font-size:13px;
+}
+.recipe-meta{
+ display:flex;
+ justify-content:space-between;
+ gap:8px;
+ margin-top:14px;
+ color:var(--muted);
+ font-size:12px;
+}
+.recipe-actions{
+ display:flex;
+ gap:7px;
+ margin-top:13px;
+}
+
+.ingredient-row{
+ display:grid;
+ grid-template-columns:2fr 1fr 1fr 45px;
+ gap:8px;
+ margin-bottom:8px;
+ align-items:center;
+}
+.remove-row{
+ border:0;
+ background:#fee2e2;
+ color:#991b1b;
+ border-radius:9px;
+ height:42px;
+}
+.recipe-builder{
+ border:2px solid var(--orange);
+ background:var(--orange3);
+ border-radius:16px;
+ padding:18px;
+ margin-bottom:18px;
+}
+
+.menu-preview{
+ background:white;
+ color:#18181b;
+ border:1px solid #ddd;
+ border-radius:15px;
+ overflow:hidden;
+}
+body.dark .menu-preview{
+ background:#fafafa;
+ color:#18181b;
+}
+.menu-header{
+ padding:28px;
+ text-align:center;
+ border-bottom:3px solid var(--orange);
+}
+.menu-logo{
+ max-height:70px;
+ max-width:180px;
+ object-fit:contain;
+}
+.menu-header h2{
+ font-size:25px;
+ margin-top:10px;
+}
+.menu-section{
+ padding:20px 25px;
+ border-bottom:1px solid #ddd;
+}
+.menu-section h3{
+ color:#ea580c;
+ margin-bottom:12px;
+}
+.menu-line{
+ display:flex;
+ justify-content:space-between;
+ gap:15px;
+ padding:9px 0;
+ border-bottom:1px dotted #ccc;
+}
+.menu-footer{
+ padding:18px 25px;
+ background:#fff7ed;
+}
+.menu-summary{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:10px;
+ text-align:center;
+}
+.menu-summary div{
+ padding:12px;
+ border:1px solid #fed7aa;
+ border-radius:10px;
+}
+
+.food-grid{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:13px;
+}
+.food-card{
+ border:1px solid var(--border);
+ background:var(--card);
+ border-radius:13px;
+ overflow:hidden;
+}
+.food-icon{
+ height:95px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ background:var(--orange3);
+ font-size:40px;
+}
+.food-body{padding:13px}
+.food-body h3{font-size:15px;margin-bottom:5px}
+.food-body p{font-size:12px;color:var(--muted);line-height:1.6}
+
+.preview{
+ max-width:180px;
+ max-height:100px;
+ object-fit:contain;
+ margin-top:8px;
+ border-radius:10px;
+}
+
+.profile-box{
+ display:flex;
+ align-items:center;
+ gap:18px;
+}
+.profile-big{
+ width:85px;
+ height:85px;
+ border-radius:50%;
+ background:var(--orange);
+ color:white;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:28px;
+ font-weight:900;
+ overflow:hidden;
+}
+.profile-big img{width:100%;height:100%;object-fit:cover}
+
+.progress{
+ height:9px;
+ background:var(--border);
+ border-radius:30px;
+ overflow:hidden;
+}
+.progress i{
+ display:block;
+ height:100%;
+ background:var(--orange);
+}
+
+.notice{
+ position:fixed;
+ right:18px;
+ bottom:18px;
+ background:#18181b;
+ color:white;
+ padding:13px 17px;
+ border-radius:10px;
+ z-index:5000;
+ display:none;
+}
+
+@media(max-width:1100px){
+ .grid{grid-template-columns:repeat(2,1fr)}
+ .grid3{grid-template-columns:repeat(2,1fr)}
+ .recipe-grid{grid-template-columns:repeat(2,1fr)}
+ .food-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:760px){
+ .sidebar{
+  transform:translateX(-100%);
+  transition:.25s;
+ }
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .menu-toggle{display:block}
+ .content{padding:15px 12px}
+ .topbar{padding:0 12px}
+ .grid,.grid3,.form-grid,.form-grid3,
+ .recipe-grid,.food-grid{grid-template-columns:1fr}
+ .ingredient-row{
+  grid-template-columns:1fr 1fr 40px;
+ }
+ .ingredient-row select{grid-column:1/3}
+ h1{font-size:24px}
+ .menu-summary{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HESAP ================= -->
+
+<div class="auth" id="auth">
+
+ <div class="auth-box">
+
+  <div class="brand">Hesapla<span>TR</span></div>
+  <div class="auth-desc">Profesyonel yemek ve mutfak yönetim sistemi</div>
+
+  <div class="tabs">
+   <button id="tabLogin" class="active" onclick="authMode('login')">
+    Giriş Yap
+   </button>
+   <button id="tabRegister" onclick="authMode('register')">
+    Hesap Oluştur
+   </button>
+  </div>
+
+  <div id="loginForm">
+
+   <div class="field">
+    <label>Kullanıcı adı</label>
+    <input id="loginUser" autocomplete="username">
+   </div>
+
+   <div class="field">
+    <label>Şifre</label>
+    <input id="loginPass" type="password" autocomplete="current-password">
+   </div>
+
+   <button class="btn full" onclick="login()">Giriş Yap</button>
+
+   <div class="auth-info">
+    Hesabın yoksa <strong>Hesap Oluştur</strong> sekmesine geçerek
+    kendi kullanıcı adını ve şifreni oluşturabilirsin.
+   </div>
+
+  </div>
+
+  <div id="registerForm" class="hidden">
+
+   <div class="field">
+    <label>Ad Soyad</label>
+    <input id="regName" placeholder="Adınız Soyadınız">
+   </div>
+
+   <div class="field">
+    <label>Kullanıcı Adı</label>
+    <input id="regUser" placeholder="kullanici123">
+   </div>
+
+   <div class="field">
+    <label>E-posta</label>
+    <input id="regEmail" type="email" placeholder="ornek@mail.com">
+   </div>
+
+   <div class="field">
+    <label>Şifre</label>
+    <input id="regPass" type="password" placeholder="En az 6 karakter">
+   </div>
+
+   <div class="field">
+    <label>Şifre Tekrar</label>
+    <input id="regPass2" type="password">
+   </div>
+
+   <button class="btn full" onclick="register()">
+    Hesabımı Oluştur
+   </button>
+
+  </div>
+
+ </div>
+
+</div>
+
+
+<!-- ================= UYGULAMA ================= -->
+
+<div id="app" class="hidden">
+
+<aside class="sidebar" id="sidebar">
+
+ <div class="logo">Hesapla<span>TR</span></div>
+
+ <div class="menu-title">Yönetim</div>
+
+ <div class="nav">
+  <button class="active" onclick="page('dashboard',this)">🏠 Ana Panel</button>
+  <button onclick="page('recipes',this)">🍲 Yemekler & Reçeteler</button>
+  <button onclick="page('menus',this)">📋 Menü Oluştur</button>
+  <button onclick="page('foods',this)">🥗 Gıda & Kalori</button>
+  <button onclick="page('stock',this)">📦 Depo / Stok</button>
+  <button onclick="page('staff',this)">👥 Personel</button>
+  <button onclick="page('cost',this)">💰 Maliyet</button>
+ </div>
+
+ <div class="menu-title">Sistem</div>
+
+ <div class="nav">
+  <button onclick="page('savedMenus',this)">🗂️ Kayıtlı Menüler</button>
+  <button onclick="page('history',this)">🕘 İşlem Geçmişi</button>
+  <button onclick="page('profile',this)">👤 Profil</button>
+  <button onclick="page('settings',this)">⚙️ Ayarlar</button>
+  <button onclick="page('about',this)">ℹ️ Hakkında</button>
+ </div>
+
+</aside>
+
+<main class="main">
+
+<header class="topbar">
+
+ <button class="menu-toggle" onclick="toggleSide()">☰</button>
+
+ <strong id="pageTitle">Ana Panel</strong>
+
+ <div class="top-right">
+  <button class="icon" onclick="toggleDark()">◐</button>
+  <div class="avatar" id="topAvatar">U</div>
+ </div>
+
+</header>
+
+<div class="content">
+
+
+<!-- ================= DASHBOARD ================= -->
+
+<section class="page active" id="dashboard">
+
+ <div class="hero">
+  <h1 id="welcome">Hoş geldin 👋</h1>
+  <p>Yemek, reçete, menü, kalori ve depo işlemlerini tek merkezden yönet.</p>
+ </div>
+
+ <div class="grid">
+
+  <div class="card stat">
+   <div class="label">Yemek / Reçete</div>
+   <div class="num" id="dashRecipes">0</div>
+   <span class="label">kayıt</span>
+  </div>
+
+  <div class="card stat">
+   <div class="label">Gıda</div>
+   <div class="num" id="dashFoods">0</div>
+   <span class="label">ürün</span>
+  </div>
+
+  <div class="card stat">
+   <div class="label">Stok</div>
+   <div class="num" id="dashStock">0</div>
+   <span class="label">ürün</span>
+  </div>
+
+  <div class="card stat">
+   <div class="label">Kayıtlı Menü</div>
+   <div class="num" id="dashMenus">0</div>
+   <span class="label">menü</span>
+  </div>
+
+ </div>
+
+ <h2 style="margin:25px 0 13px">Hızlı İşlemler</h2>
+
+ <div class="grid">
+
+  <div class="card tool" onclick="page('recipes')">
+   <div class="tool-icon">🍲</div>
+   <h3>Reçete Oluştur</h3>
+   <p>Yemeğin malzemelerini, miktarlarını ve porsiyon bilgisini belirle.</p>
+  </div>
+
+  <div class="card tool" onclick="page('menus')">
+   <div class="tool-icon">📋</div>
+   <h3>Profesyonel Menü</h3>
+   <p>Hazırladığın reçeteleri günlük menü halinde düzenle.</p>
+  </div>
+
+  <div class="card tool" onclick="page('foods')">
+   <div class="tool-icon">🔥</div>
+   <h3>Kalori Hesapla</h3>
+   <p>Gram miktarına göre kalori ve makro besin hesabı yap.</p>
+  </div>
+
+  <div class="card tool" onclick="page('stock')">
+   <div class="tool-icon">📦</div>
+   <h3>Depo</h3>
+   <p>Stok miktarı, fiyatı ve kritik stok seviyelerini takip et.</p>
+  </div>
+
+ </div>
+
+ <div class="card">
+  <h3>⚠️ Kritik Stoklar</h3>
+  <div id="criticalStock"></div>
+ </div>
+
+</section>
+
+
+<!-- ================= REÇETELER ================= -->
+
+<section class="page" id="recipes">
+
+ <h1>🍲 Yemekler & Reçeteler</h1>
+ <p class="subtitle">
+  Hazır yemekleri incele veya kendi profesyonel reçeteni oluştur.
+ </p>
+
+ <div class="recipe-builder">
+
+  <h2>Yeni Reçete Oluştur</h2>
+  <p class="subtitle" style="margin-top:5px">
+   Malzemeleri gram/adet olarak gir. Sistem toplam kalori ve maliyeti otomatik hesaplar.
+  </p>
+
+  <div class="form-grid">
+
+   <div class="field">
+    <label>Yemek Adı</label>
+    <input id="recipeName" placeholder="Örn: Etli Kuru Fasulye">
+   </div>
+
+   <div class="field">
+    <label>Porsiyon Sayısı</label>
+    <input id="recipeServings" type="number" value="4" min="1">
+   </div>
+
+   <div class="field">
+    <label>Kategori</label>
+    <select id="recipeCategory">
+     <option>Ana Yemek</option>
+     <option>Çorba</option>
+     <option>Pilav</option>
+     <option>Makarna</option>
+     <option>Börek</option>
+     <option>Tatlı</option>
+     <option>Salata</option>
+     <option>Kahvaltı</option>
+     <option>İçecek</option>
+    </select>
+   </div>
+
+   <div class="field">
+    <label>Açıklama</label>
+    <input id="recipeDescription" placeholder="Kısa açıklama">
+   </div>
+
+  </div>
+
+  <h3 style="margin:18px 0 10px">Malzemeler</h3>
+
+  <div id="ingredientRows"></div>
+
+  <button class="btn small" onclick="addIngredientRow()">
+   + Malzeme Ekle
+  </button>
+
+  <div class="actions">
+   <button class="btn green" onclick="calculateRecipe()">
+    Hesapla
+   </button>
+
+   <button class="btn" onclick="saveRecipe()">
+    Reçeteyi Kaydet
+   </button>
+  </div>
+
+  <div class="result" id="recipeResult">
+   Malzemeleri girdikten sonra toplam değerler burada gösterilir.
+  </div>
+
+ </div>
+
+ <div class="card">
+  <input
+   class="search"
+   id="recipeSearch"
+   placeholder="Yemek ara... örn: kebap, pilav, tavuk"
+   oninput="renderRecipes()">
+ </div>
+
+ <div class="recipe-grid" id="recipeGrid"></div>
+
+</section>
+
+
+<!-- ================= MENÜ ================= -->
+
+<section class="page" id="menus">
+
+ <h1>📋 Profesyonel Menü Oluştur</h1>
+ <p class="subtitle">
+  Reçetelerden günlük menü hazırla ve profesyonel görünümde kaydet.
+ </p>
+
+ <div class="card">
+
+  <div class="form-grid">
+
+   <div class="field">
+    <label>Menü Başlığı</label>
+    <input id="menuName" value="Günlük Yemek Menüsü">
+   </div>
+
+   <div class="field">
+    <label>Tarih</label>
+    <input id="menuDate" type="date">
+   </div>
+
+   <div class="field">
+    <label>Kişi Sayısı</label>
+    <input id="menuPeople" type="number" value="1" min="1" onchange="updateMenuPreview()">
+   </div>
+
+   <div class="field">
+    <label>Menüye Yemek Ekle</label>
+    <select id="menuRecipe"></select>
+   </div>
+
+  </div>
+
+  <div class="actions">
+   <button class="btn" onclick="addMenuItem()">+ Menüye Ekle</button>
+   <button class="btn green" onclick="saveMenu()">Menüyü Kaydet</button>
+  </div>
+
+ </div>
+
+ <div class="menu-preview" id="menuPreview">
+
+  <div class="menu-header">
+   <img id="menuLogoPreview" class="menu-logo hidden">
+   <h2 id="previewMenuName">Günlük Yemek Menüsü</h2>
+   <p id="previewMenuDate">Tarih</p>
+  </div>
+
+  <div id="menuSections"></div>
+
+  <div class="menu-footer">
+
+   <div class="menu-summary">
+    <div>
+     <strong id="previewCalories">0 kcal</strong>
+     <br><small>Toplam Kalori</small>
+    </div>
+    <div>
+     <strong id="previewCost">0 TL</strong>
+     <br><small>Toplam Maliyet</small>
+    </div>
+    <div>
+     <strong id="previewPer">0 TL</strong>
+     <br><small>Kişi Başı</small>
+    </div>
+   </div>
+
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- ================= GIDALAR ================= -->
+
+<section class="page" id="foods">
+
+ <h1>🥗 Gıda & Kalori</h1>
+ <p class="subtitle">
+  Temel gıdalar, et ürünleri, bakliyat, sebze, meyve, süt ürünleri,
+  içecekler ve baharatların kalori değerlerini kullan.
+ </p>
+
+ <div class="card">
+
+  <h2>🔥 Kalori Hesaplama</h2>
+  <br>
+
+  <div class="form-grid">
+
+   <div class="field">
+    <label>Gıda</label>
+    <select id="calcFood" onchange="showFoodInfo()"></select>
+   </div>
+
+   <div class="field">
+    <label>Miktar (gram)</label>
+    <input id="calcGram" type="number" value="100">
+   </div>
+
+  </div>
+
+  <button class="btn" onclick="calculateFood()">
+   Kaloriyi Hesapla
+  </button>
+
+  <div class="result" id="foodResult">
+   Gıda seçin.
+  </div>
+
+ </div>
+
+ <div class="card">
+  <input id="foodSearch"
+   placeholder="Gıda ara..."
+   oninput="renderFoodCards()">
+ </div>
+
+ <div class="food-grid" id="foodGrid"></div>
+
+ <div class="card">
+
+  <h2>➕ Kendi Gıdanı Ekle</h2>
+  <br>
+
+  <div class="form-grid">
+
+   <div class="field">
+    <label>Gıda Adı</label>
+    <input id="customFoodName">
+   </div>
+
+   <div class="field">
+    <label>Kategori</label>
+    <select id="customFoodCat">
+     <option>Temel Gıda</option>
+     <option>Hayvansal</option>
+     <option>Sebze</option>
+     <option>Meyve</option>
+     <option>Bakliyat</option>
+     <option>Süt Ürünü</option>
+     <option>İçecek</option>
+     <option>Baharat</option>
+     <option>Diğer</option>
+    </select>
+   </div>
+
+   <div class="field">
+    <label>Kalori / 100 g</label>
+    <input id="customFoodCal" type="number">
+   </div>
+
+   <div class="field">
+    <label>Protein / 100 g</label>
+    <input id="customFoodProtein" type="number" value="0">
+   </div>
+
+   <div class="field">
+    <label>Karbonhidrat / 100 g</label>
+    <input id="customFoodCarb" type="number" value="0">
+   </div>
+
+   <div class="field">
+    <label>Yağ / 100 g</label>
+    <input id="customFoodFat" type="number" value="0">
+   </div>
+
+  </div>
+
+  <button class="btn" onclick="addCustomFood()">
+   Gıdayı Kaydet
+  </button>
+
+ </div>
+
+</section>
+
+
+<!-- ================= STOK ================= -->
+
+<section class="page" id="stock">
+
+ <h1>📦 Depo / Stok</h1>
+ <p class="subtitle">Mutfak malzemelerinin stok durumunu yönet.</p>
+
+ <div class="card">
+
+  <div class="form-grid3">
+
+   <div class="field">
+    <label>Ürün</label>
+    <input id="stockName">
+   </div>
+
+   <div class="field">
+    <label>Kategori</label>
+    <select id="stockCat">
+     <option>Temel Gıda</option>
+     <option>Et</option>
+     <option>Sebze</option>
+     <option>Meyve</option>
+     <option>Bakliyat</option>
+     <option>Süt Ürünleri</option>
+     <option>İçecek</option>
+     <option>Baharat</option>
+     <option>Diğer</option>
+    </select>
+   </div>
+
+   <div class="field">
+    <label>Miktar</label>
+    <input id="stockQty" type="number">
+   </div>
+
+   <div class="field">
+    <label>Birim</label>
+    <select id="stockUnit">
+     <option>kg</option>
+     <option>gram</option>
+     <option>litre</option>
+     <option>adet</option>
+     <option>paket</option>
+     <option>kutu</option>
+    </select>
+   </div>
+
+   <div class="field">
+    <label>Birim Fiyat TL</label>
+    <input id="stockPrice" type="number" step="0.01">
+   </div>
+
+   <div class="field">
+    <label>Kritik Seviye</label>
+    <input id="stockMin" type="number" value="5">
+   </div>
+
+  </div>
+
+  <button class="btn" onclick="addStock()">+ Depoya Ekle</button>
+
+ </div>
+
+ <div class="card">
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Ürün</th>
+      <th>Kategori</th>
+      <th>Miktar</th>
+      <th>Birim Fiyat</th>
+      <th>Toplam</th>
+      <th>Durum</th>
+      <th></th>
+     </tr>
+    </thead>
+    <tbody id="stockTable"></tbody>
+   </table>
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- ================= PERSONEL ================= -->
+
+<section class="page" id="staff">
+
+ <h1>👥 Personel</h1>
+ <p class="subtitle">Personel kayıtlarını yönet.</p>
+
+ <div class="card">
+
+  <div class="form-grid">
+
+   <div class="field">
+    <label>Ad Soyad</label>
+    <input id="staffName">
+   </div>
+
+   <div class="field">
+    <label>Görev</label>
+    <input id="staffRole">
+   </div>
+
+   <div class="field">
+    <label>Birim</label>
+    <input id="staffUnit">
+   </div>
+
+   <div class="field">
+    <label>Not</label>
+    <input id="staffNote">
+   </div>
+
+  </div>
+
+  <button class="btn" onclick="addStaff()">+ Personel Ekle</button>
+
+ </div>
+
+ <div class="card">
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Ad Soyad</th>
+      <th>Görev</th>
+      <th>Birim</th>
+      <th>Not</th>
+      <th></th>
+     </tr>
+    </thead>
+    <tbody id="staffTable"></tbody>
+   </table>
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- ================= MALİYET ================= -->
+
+<section class="page" id="cost">
+
+ <h1>💰 Maliyet Hesaplama</h1>
+ <p class="subtitle">Toplam ve kişi başı yemek maliyetini hesapla.</p>
+
+ <div class="card">
+
+  <div class="form-grid">
+
+   <div class="field">
+    <label>Malzeme Maliyeti</label>
+    <input id="costMaterial" type="number">
+   </div>
+
+   <div class="field">
+    <label>Kişi Sayısı</label>
+    <input id="costPeople" type="number">
+   </div>
+
+   <div class="field">
+    <label>Ek Maliyet</label>
+    <input id="costExtra" type="number" value="0">
+   </div>
+
+   <div class="field">
+    <label>Fire (%)</label>
+    <input id="costWaste" type="number" value="0">
+   </div>
+
+  </div>
+
+  <button class="btn" onclick="calculateCost()">Hesapla</button>
+
+  <div class="result" id="costResult"></div>
+
+ </div>
+
+</section>
+
+
+<!-- ================= KAYITLI MENÜLER ================= -->
+
+<section class="page" id="savedMenus">
+
+ <h1>🗂️ Kayıtlı Menüler</h1>
+ <p class="subtitle">Daha önce hazırladığın profesyonel menüler.</p>
+
+ <div id="savedMenuList"></div>
+
+</section>
+
+
+<!-- ================= GEÇMİŞ ================= -->
+
+<section class="page" id="history">
+
+ <h1>🕘 İşlem Geçmişi</h1>
+ <p class="subtitle">Sistemde yapılan son işlemler.</p>
+
+ <div class="card">
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>İşlem</th>
+      <th>Açıklama</th>
+      <th>Tarih</th>
+     </tr>
+    </thead>
+    <tbody id="historyTable"></tbody>
+   </table>
+  </div>
+
+  <br>
+  <button class="btn red" onclick="clearHistory()">Geçmişi Temizle</button>
+
+ </div>
+
+</section>
+
+
+<!-- ================= PROFİL ================= -->
+
+<section class="page" id="profile">
+
+ <h1>👤 Profil</h1>
+ <p class="subtitle">Hesabını ve marka bilgilerini düzenle.</p>
+
+ <div class="card">
+
+  <div class="profile-box">
+
+   <div class="profile-big" id="profileAvatar">U</div>
+
+   <div>
+    <h2 id="profileName">Kullanıcı</h2>
+    <p class="subtitle" id="profileUsername">@kullanici</p>
+   </div>
+
+  </div>
+
+  <br>
+
+  <div class="form-grid">
+
+   <div class="field">
+    <label>Ad Soyad</label>
+    <input id="editName">
+   </div>
+
+   <div class="field">
+    <label>E-posta</label>
+    <input id="editEmail">
+   </div>
+
+   <div class="field">
+    <label>Kuruluş / İşletme Adı</label>
+    <input id="businessName" placeholder="Örn: Reyhanlı Yemek">
+   </div>
+
+   <div class="field">
+    <label>Logo</label>
+    <input type="file" id="logoFile" accept="image/*" onchange="loadLogo()">
+   </div>
+
+  </div>
+
+  <img id="logoPreview" class="preview hidden">
+
+  <br>
+
+  <button class="btn" onclick="saveProfile()">
+   Profili Kaydet
+  </button>
+
+ </div>
+
+</section>
+
+
+<!-- ================= AYARLAR ================= -->
+
+<section class="page" id="settings">
+
+ <h1>⚙️ Ayarlar</h1>
+ <p class="subtitle">Hesap ve uygulama ayarları.</p>
+
+ <div class="card">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--border)">
+   <span>Koyu Tema</span>
+   <button class="btn dark small" onclick="toggleDark()">Değiştir</button>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 0">
+   <span>Oturumu Kapat</span>
+   <button class="btn red small" onclick="logout()">Çıkış Yap</button>
+  </div>
+
+ </div>
+
+ <div class="card">
+
+  <h3>Veri Yedekleme</h3>
+  <p class="subtitle" style="margin-top:5px">
+   Menü, reçete, gıda, stok ve personel verilerini JSON olarak yedekleyebilirsin.
+  </p>
+
+  <button class="btn" onclick="exportData()">Yedek Oluştur</button>
+
+ </div>
+
+</section>
+
+
+<!-- ================= HAKKINDA ================= -->
+
+<section class="page" id="about">
+
+ <h1>ℹ️ Hakkında</h1>
+ <p class="subtitle">HesaplaTR hakkında bilgiler.</p>
+
+ <div class="card">
+
+  <h2>HesaplaTR</h2>
+
+  <p style="margin-top:14px;line-height:1.8;color:var(--muted)">
+   HesaplaTR; yemek reçetelerinin hazırlanması, malzeme
+   miktarlarının hesaplanması, kalori ve maliyet analizi,
+   profesyonel günlük menü hazırlanması, gıda yönetimi,
+   depo ve stok takibi ile personel yönetimini tek platformda
+   birleştirmek amacıyla geliştirilmiştir.
+  </p>
+
+ </div>
+
+ <div class="card">
+
+  <h3>Proje Sahibi</h3>
+
+  <br>
+
+  <h2>Alaettin REYHANLI</h2>
+
+  <p style="margin-top:9px;color:var(--muted);line-height:1.7">
+   HesaplaTR projesinin geliştiricisi ve proje sahibidir.
+  </p>
+
+ </div>
+
+</section>
+
+</div>
+</main>
+</div>
+
+<div class="notice" id="notice"></div>
+
+
+<script>
+
+/* =========================================================
+   GIDA VERİTABANI
+========================================================= */
+
+const FOOD_DATABASE=[
+
+/* TEMEL GIDALAR */
+["Pirinç",130,2.7,28,.3,"Temel Gıda","🍚"],
+["Bulgur",342,12.3,75.9,1.3,"Temel Gıda","🌾"],
+["Makarna",157,5.8,30.9,.9,"Temel Gıda","🍝"],
+["Erişte",350,12,70,2,"Temel Gıda","🍜"],
+["Arpa Şehriye",350,10,72,1.5,"Temel Gıda","🌾"],
+["Un",364,10.3,76.3,1,"Temel Gıda","🌾"],
+["Mısır Unu",361,6.9,76.9,3.9,"Temel Gıda","🌽"],
+["Ekmek",265,9,49,3.2,"Temel Gıda","🍞"],
+["Lavaş",275,9,55,2,"Temel Gıda","🫓"],
+["Yufka",280,8,56,3,"Temel Gıda","🫓"],
+["Yulaf",389,16.9,66.3,6.9,"Temel Gıda","🥣"],
+["İrmik",360,12,73,1,"Temel Gıda","🌾"],
+["Nişasta",381,.3,91,.1,"Temel Gıda","🌾"],
+
+/* ET */
+["Dana Eti",250,26,0,17,"Hayvansal","🥩"],
+["Dana Kuşbaşı",217,26,0,12,"Hayvansal","🥩"],
+["Dana Kıyma",254,26,0,17,"Hayvansal","🥩"],
+["Dana Bonfile",218,29,0,11,"Hayvansal","🥩"],
+["Kuzu Eti",294,25,0,21,"Hayvansal","🥩"],
+["Kuzu Kıyma",282,25,0,20,"Hayvansal","🥩"],
+["Tavuk Göğsü",165,31,0,3.6,"Hayvansal","🍗"],
+["Tavuk But",209,26,0,11,"Hayvansal","🍗"],
+["Hindi Eti",135,29,0,1.6,"Hayvansal","🍗"],
+["Sucuk",452,24,2,38,"Hayvansal","🥩"],
+["Pastırma",250,30,2,13,"Hayvansal","🥩"],
+
+/* BALIK */
+["Hamsi",131,20,0,4.8,"Hayvansal","🐟"],
+["Palamut",168,23,0,8,"Hayvansal","🐟"],
+["Levrek",124,24,0,2.5,"Hayvansal","🐟"],
+["Çipura",96,19,0,1.8,"Hayvansal","🐟"],
+["Uskumru",205,19,0,14,"Hayvansal","🐟"],
+["Sardalya",208,25,0,11,"Hayvansal","🐟"],
+["Alabalık",148,21,0,6.5,"Hayvansal","🐟"],
+["Ton Balığı",132,28,0,1.3,"Hayvansal","🐟"],
+
+/* SÜT */
+["Süt",61,3.2,4.8,3.3,"Süt Ürünü","🥛"],
+["Yoğurt",59,10.3,3.6,.4,"Süt Ürünü","🥛"],
+["Süzme Yoğurt",97,5.7,4.1,7,"Süt Ürünü","🥛"],
+["Kefir",52,3.3,4.7,2,"Süt Ürünü","🥛"],
+["Beyaz Peynir",264,14,4,21,"Süt Ürünü","🧀"],
+["Kaşar Peyniri",404,25,2,33,"Süt Ürünü","🧀"],
+["Lor Peyniri",98,11,3,4,"Süt Ürünü","🧀"],
+["Tereyağı",717,.9,.1,81,"Süt Ürünü","🧈"],
+
+/* YUMURTA */
+["Yumurta",155,13,1.1,11,"Hayvansal","🥚"],
+
+/* SEBZE */
+["Patates",77,2,17,.1,"Sebze","🥔"],
+["Domates",18,.9,3.9,.2,"Sebze","🍅"],
+["Salatalık",15,.7,3.6,.1,"Sebze","🥒"],
+["Havuç",41,.9,9.6,.2,"Sebze","🥕"],
+["Soğan",40,1.1,9.3,.1,"Sebze","🧅"],
+["Sarımsak",149,6.4,33,0.5,"Sebze","🧄"],
+["Biber",31,1,6,.3,"Sebze","🌶️"],
+["Patlıcan",25,1,6,.2,"Sebze","🍆"],
+["Kabak",17,1.2,3.1,.3,"Sebze","🥒"],
+["Ispanak",23,2.9,3.6,.4,"Sebze","🥬"],
+["Marul",15,1.4,2.9,.2,"Sebze","🥬"],
+["Brokoli",34,2.8,6.6,.4,"Sebze","🥦"],
+["Karnabahar",25,1.9,5,.3,"Sebze","🥦"],
+["Bezelye",81,5.4,14.5,.4,"Sebze","🫛"],
+["Taze Fasulye",31,1.8,7,.2,"Sebze","🫛"],
+["Pırasa",61,1.5,14,.3,"Sebze","🥬"],
+["Lahana",25,1.3,6,.1,"Sebze","🥬"],
+["Bamya",33,1.9,7.5,.2,"Sebze","🌱"],
+["Enginar",47,3.3,10.5,.2,"Sebze","🌱"],
+["Mantar",22,3.1,3.3,.3,"Sebze","🍄"],
+
+/* MEYVE */
+["Elma",52,.3,14,.2,"Meyve","🍎"],
+["Armut",57,.4,15,.1,"Meyve","🍐"],
+["Muz",89,1.1,22.8,.3,"Meyve","🍌"],
+["Portakal",47,.9,11.8,.1,"Meyve","🍊"],
+["Mandarin",53,.8,13.3,.3,"Meyve","🍊"],
+["Üzüm",69,.7,18.1,.2,"Meyve","🍇"],
+["Çilek",32,.7,7.7,.3,"Meyve","🍓"],
+["Karpuz",30,.6,7.6,.2,"Meyve","🍉"],
+["Kavun",34,.8,8.2,.2,"Meyve","🍈"],
+["Limon",29,1.1,9.3,.3,"Meyve","🍋"],
+
+/* BAKLİYAT */
+["Mercimek",116,9,20,.4,"Bakliyat","🫘"],
+["Kırmızı Mercimek",352,25,63,1.1,"Bakliyat","🫘"],
+["Yeşil Mercimek",116,9,20,.4,"Bakliyat","🫘"],
+["Nohut",164,8.9,27.4,2.6,"Bakliyat","🫘"],
+["Kuru Fasulye",127,8.7,22.8,.5,"Bakliyat","🫘"],
+["Barbunya",127,8.7,22.8,.5,"Bakliyat","🫘"],
+["Bezelye",81,5.4,14.5,.4,"Bakliyat","🫛"],
+
+/* YAĞ */
+["Zeytinyağı",884,0,0,100,"Temel Gıda","🫒"],
+["Ayçiçek Yağı",884,0,0,100,"Temel Gıda","🫗"],
+["Mısır Yağı",884,0,0,100,"Temel Gıda","🫗"],
+
+/* KURUYEMİŞ */
+["Badem",579,21.2,21.6,49.9,"Diğer","🥜"],
+["Ceviz",654,15.2,13.7,65.2,"Diğer","🌰"],
+["Fındık",628,15,16.7,60.8,"Diğer","🥜"],
+["Antep Fıstığı",562,20,28,45,"Diğer","🥜"],
+
+/* ŞEKER */
+["Şeker",387,0,100,0,"Diğer","🍬"],
+["Bal",304,.3,82.4,0,"Diğer","🍯"],
+
+/* İÇECEK */
+["Su",0,0,0,0,"İçecek","💧"],
+["Ayran",36,1.8,2.5,1.5,"İçecek","🥛"],
+["Türk Kahvesi",2,.1,.3,.1,"İçecek","☕"],
+["Çay",1,0,.2,0,"İçecek","🍵"],
+["Portakal Suyu",45,.7,10.4,.2,"İçecek","🧃"],
+["Elma Suyu",46,.1,11.3,.1,"İçecek","🧃"],
+
+/* BAHARAT */
+["Tuz",0,0,0,0,"Baharat","🧂"],
+["Karabiber",251,10.4,64.8,3.3,"Baharat","🌶️"],
+["Pul Biber",282,13,57,14,"Baharat","🌶️"],
+["Kırmızı Toz Biber",282,14,54,13,"Baharat","🌶️"],
+["Kimyon",375,18,44,17,"Baharat","🌿"],
+["Kekik",276,9,64,7,"Baharat","🌿"],
+["Nane",285,20,52,6,"Baharat","🌿"],
+["Sumak",217,6,22,12,"Baharat","🌿"],
+["Tarçın",247,4,80,1.2,"Baharat","🌿"],
+["Yenibahar",263,6,72,8,"Baharat","🌿"]
+];
+
+function convertFood(x){
+ return {
+  name:x[0],cal:x[1],p:x[2],c:x[3],f:x[4],
+  cat:x[5],emoji:x[6]
+ };
+}
+
+const BASE_FOODS=FOOD_DATABASE.map(convertFood);
+
+
+/* =========================================================
+   TÜRK YEMEKLERİ / REÇETELERİ
+========================================================= */
+
+const RECIPES=[
+
+["Etli Kuru Fasulye","Ana Yemek",[
+ ["Kuru Fasulye",300,"g"],
+ ["Dana Kuşbaşı",250,"g"],
+ ["Kuru Soğan",100,"g"],
+ ["Domates Salçası",40,"g"],
+ ["Sıvı Yağ",30,"g"],
+ ["Tuz",5,"g"],
+ ["Karabiber",2,"g"],
+ ["Pul Biber",3,"g"]
+]],
+
+["Etli Nohut","Ana Yemek",[
+ ["Nohut",300,"g"],["Dana Kuşbaşı",250,"g"],
+ ["Kuru Soğan",100,"g"],["Domates Salçası",40,"g"],
+ ["Sıvı Yağ",30,"g"],["Tuz",5,"g"],["Karabiber",2,"g"]
+]],
+
+["Etli Barbunya","Ana Yemek",[
+ ["Barbunya",300,"g"],["Dana Kuşbaşı",250,"g"],
+ ["Kuru Soğan",100,"g"],["Domates",150,"g"],
+ ["Domates Salçası",30,"g"],["Havuç",100,"g"],
+ ["Patates",150,"g"],["Sıvı Yağ",30,"g"]
+]],
+
+["Tas Kebabı","Ana Yemek",[
+ ["Dana Kuşbaşı",400,"g"],["Patates",300,"g"],
+ ["Havuç",150,"g"],["Kuru Soğan",100,"g"],
+ ["Domates Salçası",40,"g"],["Sarımsak",10,"g"],
+ ["Sıvı Yağ",30,"g"],["Karabiber",3,"g"],["Kekik",2,"g"]
+]],
+
+["Orman Kebabı","Ana Yemek",[
+ ["Dana Kuşbaşı",400,"g"],["Patates",300,"g"],
+ ["Havuç",150,"g"],["Bezelye",150,"g"],
+ ["Kuru Soğan",100,"g"],["Domates Salçası",40,"g"],
+ ["Sıvı Yağ",30,"g"],["Kekik",2,"g"]
+]],
+
+["Hünkar Beğendi","Ana Yemek",[
+ ["Dana Eti",400,"g"],["Patlıcan",500,"g"],
+ ["Süt",250,"g"],["Tereyağı",40,"g"],
+ ["Un",30,"g"],["Kaşar Peyniri",80,"g"],
+ ["Kuru Soğan",80,"g"],["Domates",100,"g"]
+]],
+
+["Patlıcan Kebabı","Ana Yemek",[
+ ["Dana Eti",400,"g"],["Patlıcan",500,"g"],
+ ["Domates",150,"g"],["Biber",100,"g"],
+ ["Kuru Soğan",80,"g"],["Sarımsak",10,"g"],
+ ["Sıvı Yağ",30,"g"],["Tuz",5,"g"]
+]],
+
+["Çökertme Kebabı","Ana Yemek",[
+ ["Dana Eti",400,"g"],["Patates",500,"g"],
+ ["Yoğurt",300,"g"],["Sarımsak",10,"g"],
+ ["Tereyağı",30,"g"],["Domates Salçası",30,"g"],
+ ["Pul Biber",3,"g"],["Sıvı Yağ",30,"g"]
+]],
+
+["Tepsi Kebabı","Ana Yemek",[
+ ["Dana Kıyma",500,"g"],["Kuru Soğan",100,"g"],
+ ["Sarımsak",10,"g"],["Biber",100,"g"],
+ ["Domates",200,"g"],["Maydanoz",30,"g"],
+ ["Domates Salçası",30,"g"],["Pul Biber",3,"g"]
+]],
+
+["Adana Kebabı","Ana Yemek",[
+ ["Kuzu Kıyma",500,"g"],["Pul Biber",10,"g"],
+ ["Tuz",6,"g"]
+]],
+
+["Urfa Kebabı","Ana Yemek",[
+ ["Kuzu Kıyma",500,"g"],["Tuz",6,"g"],
+ ["Karabiber",3,"g"]
+]],
+
+["Beyti Kebabı","Ana Yemek",[
+ ["Dana Kıyma",500,"g"],["Lavaş",200,"g"],
+ ["Yoğurt",300,"g"],["Sarımsak",10,"g"],
+ ["Tereyağı",30,"g"],["Domates Salçası",30,"g"]
+]],
+
+["İskender Kebap","Ana Yemek",[
+ ["Dana Eti",400,"g"],["Lavaş",200,"g"],
+ ["Tereyağı",40,"g"],["Domates Salçası",50,"g"],
+ ["Yoğurt",250,"g"]
+]],
+
+["Şiş Kebap","Ana Yemek",[
+ ["Dana Kuşbaşı",500,"g"],["Kuru Soğan",100,"g"],
+ ["Yoğurt",100,"g"],["Sıvı Yağ",30,"g"],
+ ["Kekik",3,"g"],["Karabiber",3,"g"]
+]],
+
+["Cağ Kebabı","Ana Yemek",[
+ ["Kuzu Eti",500,"g"],["Kuru Soğan",100,"g"],
+ ["Yoğurt",100,"g"],["Sıvı Yağ",30,"g"],
+ ["Karabiber",3,"g"]
+]],
+
+["Ali Nazik Kebabı","Ana Yemek",[
+ ["Kuzu Eti",400,"g"],["Patlıcan",500,"g"],
+ ["Süzme Yoğurt",300,"g"],["Sarımsak",10,"g"],
+ ["Tereyağı",30,"g"],["Pul Biber",3,"g"]
+]],
+
+["Kilis Tava","Ana Yemek",[
+ ["Dana Kıyma",500,"g"],["Biber",150,"g"],
+ ["Domates",200,"g"],["Kuru Soğan",100,"g"],
+ ["Sarımsak",10,"g"],["Maydanoz",30,"g"],
+ ["Pul Biber",5,"g"]
+]],
+
+["Sac Kavurma","Ana Yemek",[
+ ["Dana Kuşbaşı",500,"g"],["Kuru Soğan",100,"g"],
+ ["Biber",150,"g"],["Domates",200,"g"],
+ ["Tereyağı",40,"g"],["Sıvı Yağ",20,"g"],
+ ["Pul Biber",3,"g"],["Karabiber",3,"g"]
+]],
+
+["Et Sote","Ana Yemek",[
+ ["Dana Kuşbaşı",500,"g"],["Kuru Soğan",100,"g"],
+ ["Biber",150,"g"],["Domates",200,"g"],
+ ["Domates Salçası",30,"g"],["Sıvı Yağ",30,"g"]
+]],
+
+["İzmir Köfte","Ana Yemek",[
+ ["Dana Kıyma",500,"g"],["Patates",400,"g"],
+ ["Kuru Soğan",100,"g"],["Sarımsak",10,"g"],
+ ["Ekmek",80,"g"],["Yumurta",50,"g"],
+ ["Domates",150,"g"],["Biber",100,"g"],
+ ["Domates Salçası",30,"g"]
+]],
+
+["Kadınbudu Köfte","Ana Yemek",[
+ ["Dana Kıyma",500,"g"],["Pirinç",100,"g"],
+ ["Kuru Soğan",100,"g"],["Yumurta",100,"g"],
+ ["Un",50,"g"],["Sıvı Yağ",40,"g"]
+]],
+
+["Hasanpaşa Köfte","Ana Yemek",[
+ ["Dana Kıyma",500,"g"],["Patates",400,"g"],
+ ["Süt",100,"g"],["Tereyağı",30,"g"],
+ ["Kaşar Peyniri",80,"g"],["Kuru Soğan",80,"g"],
+ ["Ekmek",60,"g"],["Yumurta",50,"g"]
+]],
+
+["Tavuk Sote","Ana Yemek",[
+ ["Tavuk Göğsü",500,"g"],["Kuru Soğan",100,"g"],
+ ["Biber",150,"g"],["Domates",200,"g"],
+ ["Domates Salçası",30,"g"],["Sıvı Yağ",30,"g"],
+ ["Kekik",3,"g"],["Karabiber",2,"g"]
+]],
+
+["Tavuk Haşlama","Ana Yemek",[
+ ["Tavuk But",500,"g"],["Patates",300,"g"],
+ ["Havuç",150,"g"],["Kuru Soğan",100,"g"],
+ ["Sarımsak",10,"g"],["Limon",50,"g"]
+]],
+
+["Fırında Tavuk","Ana Yemek",[
+ ["Tavuk But",600,"g"],["Patates",400,"g"],
+ ["Havuç",150,"g"],["Kuru Soğan",100,"g"],
+ ["Sarımsak",10,"g"],["Domates Salçası",30,"g"],
+ ["Sıvı Yağ",30,"g"],["Kekik",3,"g"]
+]],
+
+["Tavuklu Patates","Ana Yemek",[
+ ["Tavuk Göğsü",500,"g"],["Patates",500,"g"],
+ ["Kuru Soğan",100,"g"],["Domates",200,"g"],
+ ["Domates Salçası",30,"g"],["Sıvı Yağ",30,"g"]
+]],
+
+["Tavuklu Bezelye","Ana Yemek",[
+ ["Tavuk Göğsü",500,"g"],["Bezelye",250,"g"],
+ ["Havuç",100,"g"],["Patates",200,"g"],
+ ["Kuru Soğan",100,"g"],["Domates Salçası",30,"g"]
+]],
+
+["Tavuklu Nohut","Ana Yemek",[
+ ["Tavuk Göğsü",500,"g"],["Nohut",300,"g"],
+ ["Kuru Soğan",100,"g"],["Domates Salçası",30,"g"],
+ ["Sıvı Yağ",30,"g"]
+]],
+
+["Tavuklu Pilav","Pilav",""],
+["Bulgur Pilavı","Pilav",[
+ ["Bulgur",300,"g"],["Kuru Soğan",100,"g"],
+ ["Domates",150,"g"],["Domates Salçası",30,"g"],
+ ["Tereyağı",30,"g"]
+]],
+
+["Etli Bulgur Pilavı","Pilav",[
+ ["Bulgur",300,"g"],["Dana Kuşbaşı",250,"g"],
+ ["Kuru Soğan",100,"g"],["Domates",150,"g"],
+ ["Domates Salçası",30,"g"],["Tereyağı",30,"g"]
+]],
+
+["Etli Pilav","Pilav",[
+ ["Pirinç",300,"g"],["Dana Kuşbaşı",250,"g"],
+ ["Tereyağı",30,"g"],["Kuru Soğan",80,"g"]
+]],
+
+["Özbek Pilavı","Pilav",[
+ ["Pirinç",350,"g"],["Dana Kuşbaşı",250,"g"],
+ ["Havuç",200,"g"],["Kuru Soğan",100,"g"],
+ ["Sarımsak",15,"g"],["Sıvı Yağ",40,"g"],
+ ["Kimyon",3,"g"]
+]],
+
+["İç Pilav","Pilav",[
+ ["Pirinç",300,"g"],["Ceviz",50,"g"],
+ ["Kuru Soğan",100,"g"],["Tereyağı",40,"g"],
+ ["Tarçın",2,"g"],["Karabiber",2,"g"]
+]],
+
+["Mantı","Ana Yemek",[
+ ["Un",300,"g"],["Yumurta",50,"g"],
+ ["Dana Kıyma",250,"g"],["Kuru Soğan",80,"g"],
+ ["Yoğurt",300,"g"],["Sarımsak",10,"g"],
+ ["Tereyağı",30,"g"],["Pul Biber",3,"g"]
+]],
+
+["Su Böreği","Börek",[
+ ["Un",500,"g"],["Yumurta",250,"g"],
+ ["Tereyağı",100,"g"],["Beyaz Peynir",250,"g"]
+]],
+
+["Kıymalı Börek","Börek",[
+ ["Yufka",500,"g"],["Dana Kıyma",300,"g"],
+ ["Kuru Soğan",100,"g"],["Maydanoz",30,"g"],
+ ["Süt",150,"g"],["Yumurta",100,"g"],
+ ["Sıvı Yağ",40,"g"]
+]],
+
+["Hamsi Tava","Ana Yemek",[
+ ["Hamsi",500,"g"],["Mısır Unu",100,"g"],
+ ["Sıvı Yağ",50,"g"],["Limon",50,"g"]
+]],
+
+["Levrek Fırın","Ana Yemek",[
+ ["Levrek",600,"g"],["Kuru Soğan",100,"g"],
+ ["Limon",80,"g"],["Domates",150,"g"],
+ ["Biber",100,"g"],["Sarımsak",10,"g"],
+ ["Zeytinyağı",30,"g"]
+]],
+
+["Çipura Fırın","Ana Yemek",[
+ ["Çipura",600,"g"],["Kuru Soğan",100,"g"],
+ ["Limon",80,"g"],["Domates",150,"g"],
+ ["Biber",100,"g"],["Zeytinyağı",30,"g"]
+]],
+
+["Keşkek","Ana Yemek",[
+ ["Bulgur",350,"g"],["Kuzu Eti",300,"g"],
+ ["Tereyağı",50,"g"],["Tuz",5,"g"],["Karabiber",3,"g"]
+]],
+
+["Testi Kebabı","Ana Yemek",[
+ ["Dana Kuşbaşı",500,"g"],["Patlıcan",250,"g"],
+ ["Domates",200,"g"],["Biber",100,"g"],
+ ["Kuru Soğan",100,"g"],["Sarımsak",10,"g"],
+ ["Domates Salçası",30,"g"],["Tereyağı",30,"g"]
+]],
+
+["Ankara Tava","Ana Yemek",[
+ ["Dana Eti",300,"g"],["Arpa Şehriye",300,"g"],
+ ["Kuru Soğan",100,"g"],["Tereyağı",40,"g"],
+ ["Domates Salçası",30,"g"]
+]],
+
+["Elbasan Tava","Ana Yemek",[
+ ["Kuzu Eti",400,"g"],["Yoğurt",300,"g"],
+ ["Yumurta",100,"g"],["Un",40,"g"],
+ ["Kuru Soğan",80,"g"],["Tereyağı",30,"g"]
+]],
+
+["Mutancana","Ana Yemek",[
+ ["Kuzu Eti",400,"g"],["Kuru Kayısı",100,"g"],
+ ["Kuru Erik",80,"g"],["Badem",50,"g"],
+ ["Bal",30,"g"],["Tereyağı",30,"g"]
+]],
+
+["Ekşili Kuru Dolma","Ana Yemek",[
+ ["Kuru Patlıcan",150,"g"],["Kuru Biber",100,"g"],
+ ["Pirinç",250,"g"],["Dana Kıyma",200,"g"],
+ ["Kuru Soğan",100,"g"],["Sarımsak",10,"g"],
+ ["Domates Salçası",30,"g"],["Nar Ekşisi",30,"g"],
+ ["Sumak",5,"g"],["Nane",3,"g"]
+]],
+
+["Sulu Köfte","Ana Yemek",[
+ ["Dana Kıyma",300,"g"],["Bulgur",100,"g"],
+ ["Kuru Soğan",100,"g"],["Patates",250,"g"],
+ ["Havuç",100,"g"],["Domates Salçası",30,"g"],
+ ["Yumurta",50,"g"],["Un",30,"g"]
+]],
+
+["Karnıyarık","Ana Yemek",[
+ ["Patlıcan",500,"g"],["Dana Kıyma",300,"g"],
+ ["Kuru Soğan",100,"g"],["Domates",200,"g"],
+ ["Biber",100,"g"],["Sarımsak",10,"g"],
+ ["Domates Salçası",30,"g"],["Sıvı Yağ",40,"g"]
+]],
+
+["İmam Bayıldı","Ana Yemek",[
+ ["Patlıcan",500,"g"],["Kuru Soğan",250,"g"],
+ ["Domates",250,"g"],["Sarımsak",10,"g"],
+ ["Biber",100,"g"],["Zeytinyağı",50,"g"],
+ ["Limon",30,"g"]
+]],
+
+["Musakka","Ana Yemek",[
+ ["Patlıcan",500,"g"],["Dana Kıyma",300,"g"],
+ ["Kuru Soğan",100,"g"],["Domates",200,"g"],
+ ["Biber",100,"g"],["Domates Salçası",30,"g"],
+ ["Sıvı Yağ",40,"g"]
+]],
+
+["Kıymalı Patates","Ana Yemek",[
+ ["Patates",500,"g"],["Dana Kıyma",250,"g"],
+ ["Kuru Soğan",100,"g"],["Domates",200,"g"],
+ ["Domates Salçası",30,"g"],["Sıvı Yağ",30,"g"]
+]],
+
+["Kıymalı Bezelye","Ana Yemek",[
+ ["Bezelye",300,"g"],["Dana Kıyma",250,"g"],
+ ["Havuç",100,"g"],["Patates",200,"g"],
+ ["Kuru Soğan",100,"g"],["Domates Salçası",30,"g"]
+]],
+
+["Kıymalı Taze Fasulye","Ana Yemek",[
+ ["Taze Fasulye",400,"g"],["Dana Kıyma",250,"g"],
+ ["Kuru Soğan",100,"g"],["Domates",200,"g"],
+ ["Domates Salçası",30,"g"],["Sıvı Yağ",30,"g"]
+]],
+
+["Kıymalı Ispanak","Ana Yemek",[
+ ["Ispanak",500,"g"],["Dana Kıyma",200,"g"],
+ ["Kuru Soğan",100,"g"],["Pirinç",50,"g"],
+ ["Domates Salçası",30,"g"],["Sıvı Yağ",20,"g"],
+ ["Yoğurt",250,"g"]
+]],
+
+["Biber Dolması","Ana Yemek",[
+ ["Biber",500,"g"],["Dana Kıyma",250,"g"],
+ ["Pirinç",200,"g"],["Kuru Soğan",100,"g"],
+ ["Domates",150,"g"],["Domates Salçası",30,"g"],
+ ["Maydanoz",30,"g"],["Nane",3,"g"]
+]],
+
+["Lahana Sarması","Ana Yemek",[
+ ["Lahana",500,"g"],["Dana Kıyma",250,"g"],
+ ["Pirinç",200,"g"],["Kuru Soğan",100,"g"],
+ ["Domates Salçası",30,"g"],["Maydanoz",30,"g"],
+ ["Nane",3,"g"]
+]],
+
+["Yaprak Sarma","Ana Yemek",[
+ ["Asma Yaprağı",300,"g"],["Pirinç",250,"g"],
+ ["Kuru Soğan",150,"g"],["Zeytinyağı",50,"g"],
+ ["Domates Salçası",30,"g"],["Nane",3,"g"],
+ ["Maydanoz",30,"g"],["Limon",50,"g"]
+]],
+
+["Hıngel","Ana Yemek",[
+ ["Un",300,"g"],["Yumurta",50,"g"],
+ ["Patates",300,"g"],["Kuru Soğan",100,"g"],
+ ["Tereyağı",40,"g"],["Yoğurt",250,"g"],
+ ["Sarımsak",10,"g"]
+]],
+
+["Tirit","Ana Yemek",[
+ ["Ekmek",300,"g"],["Dana Eti",250,"g"],
+ ["Yoğurt",250,"g"],["Sarımsak",10,"g"],
+ ["Tereyağı",30,"g"],["Pul Biber",3,"g"]
+]],
+
+["Etli Ekmek","Ana Yemek",[
+ ["Un",300,"g"],["Dana Kıyma",250,"g"],
+ ["Kuru Soğan",100,"g"],["Domates",100,"g"],
+ ["Biber",100,"g"],["Maydanoz",30,"g"]
+]],
+
+["Kuzu Kapama","Ana Yemek",[
+ ["Kuzu Eti",400,"g"],["Pirinç",250,"g"],
+ ["Kuru Soğan",100,"g"],["Havuç",100,"g"],
+ ["Bezelye",100,"g"],["Tereyağı",40,"g"]
+]]
+
+];
+
+/* Eksik gıda isimleri için otomatik temel değer */
+const EXTRA_FOODS=[
+"Kuru Soğan","Sıvı Yağ","Maydanoz","Kuru Patlıcan",
+"Kuru Biber","Kuru Kayısı","Kuru Erik","Kuru Üzüm",
+"Dolmalık Fıstık","Nar Ekşisi","Kuru Ekmek","Kuyruk Yağı",
+"Et Suyu","Tavuk Suyu"
+];
+
+const EXTRA_VALUES={
+"Kuru Soğan":[40,1.1,9.3,.1,"Sebze","🧅"],
+"Sıvı Yağ":[884,0,0,100,"Temel Gıda","🫗"],
+"Maydanoz":[36,3,6,.8,"Sebze","🌿"],
+"Kuru Patlıcan":[250,8,55,2,"Sebze","🍆"],
+"Kuru Biber":[282,14,54,13,"Sebze","🌶️"],
+"Kuru Kayısı":[241,3.4,63,0.5,"Meyve","🍑"],
+"Kuru Erik":[240,2.2,64,0.4,"Meyve","🍑"],
+"Kuru Üzüm":[299,3.1,79,.5,"Meyve","🍇"],
+"Dolmalık Fıstık":[673,14,13,68,"Diğer","🥜"],
+"Nar Ekşisi":[250,0,62,0,"Diğer","🍷"],
+"Kuru Ekmek":[350,12,70,3,"Temel Gıda","🍞"],
+"Kuyruk Yağı":[902,0,0,100,"Hayvansal","🥩"],
+"Et Suyu":[30,5,1,1,"Hayvansal","🥣"],
+"Tavuk Suyu":[20,3,1,.5,"Hayvansal","🥣"]
+};
+
+EXTRA_FOODS.forEach(n=>{
+ if(!BASE_FOODS.some(f=>f.name===n)){
+  let v=EXTRA_VALUES[n];
+  BASE_FOODS.push({
+   name:n,cal:v[0],p:v[1],c:v[2],f:v[3],cat:v[4],emoji:v[5]
+  });
+ }
+});
+
+
+/* =========================================================
+   VERİLER
+========================================================= */
+
+let foods=JSON.parse(localStorage.getItem("ht_foods")||"[]");
+let recipes=JSON.parse(localStorage.getItem("ht_recipes")||"[]");
+let stocks=JSON.parse(localStorage.getItem("ht_stocks")||"[]");
+let staff=JSON.parse(localStorage.getItem("ht_staff")||"[]");
+let menus=JSON.parse(localStorage.getItem("ht_menus")||"[]");
+let history=JSON.parse(localStorage.getItem("ht_history")||"[]");
+
+let currentUser=JSON.parse(
+ localStorage.getItem("ht_current_user")||"null"
+);
+
+let currentMenuItems=[];
+let tempRecipeResult=null;
+
+function allFoods(){
+ return [...BASE_FOODS,...foods];
+}
+
+function getFood(name){
+ return allFoods().find(
+  f=>f.name.toLowerCase()===String(name).toLowerCase()
+ );
+}
+
+function money(n){
+ return Number(n||0).toLocaleString("tr-TR",{
+  minimumFractionDigits:2,
+  maximumFractionDigits:2
+ })+" TL";
+}
+
+function esc(v){
+ return String(v??"")
+ .replace(/&/g,"&amp;")
+ .replace(/</g,"&lt;")
+ .replace(/>/g,"&gt;")
+ .replace(/"/g,"&quot;")
+ .replace(/'/g,"&#039;");
+}
+
+function toast(text){
+ const n=document.getElementById("notice");
+ n.textContent=text;
+ n.style.display="block";
+ setTimeout(()=>n.style.display="none",2200);
+}
+
+function saveData(){
+ localStorage.setItem("ht_foods",JSON.stringify(foods));
+ localStorage.setItem("ht_recipes",JSON.stringify(recipes));
+ localStorage.setItem("ht_stocks",JSON.stringify(stocks));
+ localStorage.setItem("ht_staff",JSON.stringify(staff));
+ localStorage.setItem("ht_menus",JSON.stringify(menus));
+ localStorage.setItem("ht_history",JSON.stringify(history));
+}
+
+function log(action,detail){
+ history.unshift({
+  action,
+  detail,
+  time:new Date().toLocaleString("tr-TR")
+ });
+ if(history.length>100)history.length=100;
+ saveData();
+ renderHistory();
+}
+
+
+/* =========================================================
+   HESAP SİSTEMİ
+========================================================= */
+
+function getUsers(){
+ return JSON.parse(localStorage.getItem("ht_users")||"[]");
+}
+
+function saveUsers(u){
+ localStorage.setItem("ht_users",JSON.stringify(u));
+}
+
+function authMode(mode){
+
+ const login=mode==="login";
+
+ document.getElementById("loginForm").classList.toggle("hidden",!login);
+ document.getElementById("registerForm").classList.toggle("hidden",login);
+
+ document.getElementById("tabLogin").classList.toggle("active",login);
+ document.getElementById("tabRegister").classList.toggle("active",!login);
+}
+
+function register(){
+
+ const name=document.getElementById("regName").value.trim();
+ const username=document.getElementById("regUser").value.trim().toLowerCase();
+ const email=document.getElementById("regEmail").value.trim();
+ const pass=document.getElementById("regPass").value;
+ const pass2=document.getElementById("regPass2").value;
+
+ if(!name||!username||!email||!pass||!pass2){
+  toast("Tüm alanları doldur.");
+  return;
+ }
+
+ if(pass.length<6){
+  toast("Şifre en az 6 karakter olmalı.");
+  return;
+ }
+
+ if(pass!==pass2){
+  toast("Şifreler aynı değil.");
+  return;
+ }
+
+ if(!/^[a-z0-9_.-]+$/i.test(username)){
+  toast("Kullanıcı adında sadece harf, rakam, nokta, tire ve alt çizgi kullan.");
+  return;
+ }
+
+ let users=getUsers();
+
+ if(users.some(u=>u.username===username)){
+  toast("Bu kullanıcı adı zaten kayıtlı.");
+  return;
+ }
+
+ const user={
+  id:Date.now(),
+  name,
+  username,
+  email,
+  password:pass,
+  business:"",
+  logo:""
+ };
+
+ users.push(user);
+ saveUsers(users);
+
+ currentUser=user;
+
+ localStorage.setItem(
+  "ht_current_user",
+  JSON.stringify(user)
+ );
+
+ openApp();
+
+ toast("Hesabın başarıyla oluşturuldu.");
+}
+
+function login(){
+
+ const username=document.getElementById("loginUser").value.trim().toLowerCase();
+ const pass=document.getElementById("loginPass").value;
+
+ const user=getUsers().find(
+  u=>u.username===username&&u.password===pass
+ );
+
+ if(!user){
+  toast("Kullanıcı adı veya şifre yanlış.");
+  return;
+ }
+
+ currentUser=user;
+
+ localStorage.setItem(
+  "ht_current_user",
+  JSON.stringify(user)
+ );
+
+ openApp();
+
+ toast("Giriş başarılı.");
+}
+
+function logout(){
+
+ currentUser=null;
+ localStorage.removeItem("ht_current_user");
+
+ document.getElementById("app").classList.add("hidden");
+ document.getElementById("auth").classList.remove("hidden");
+
+ authMode("login");
+}
+
+function openApp(){
+
+ document.getElementById("auth").classList.add("hidden");
+ document.getElementById("app").classList.remove("hidden");
+
+ updateProfile();
+ updateAll();
+}
+
+
+/* =========================================================
+   SAYFALAR
+========================================================= */
+
+const titles={
+ dashboard:"Ana Panel",
+ recipes:"Yemekler & Reçeteler",
+ menus:"Profesyonel Menü",
+ foods:"Gıda & Kalori",
+ stock:"Depo / Stok",
+ staff:"Personel",
+ cost:"Maliyet",
+ savedMenus:"Kayıtlı Menüler",
+ history:"İşlem Geçmişi",
+ profile:"Profil",
+ settings:"Ayarlar",
+ about:"Hakkında"
+};
+
+function page(id,button){
+
+ document.querySelectorAll(".page")
+ .forEach(p=>p.classList.remove("active"));
+
+ document.getElementById(id).classList.add("active");
+
+ document.querySelectorAll(".nav button")
+ .forEach(b=>b.classList.remove("active"));
+
+ if(button)button.classList.add("active");
+
+ document.getElementById("pageTitle").textContent=titles[id]||id;
+
+ document.getElementById("sidebar").classList.remove("open");
+
+ updateAll();
+}
+
+function toggleSide(){
+ document.getElementById("sidebar").classList.toggle("open");
+}
+
+
+/* =========================================================
+   TEMA
+========================================================= */
+
+function toggleDark(){
+ document.body.classList.toggle("dark");
+
+ localStorage.setItem(
+  "ht_dark",
+  document.body.classList.contains("dark")?"1":"0"
+ );
+}
+
+if(localStorage.getItem("ht_dark")==="1"){
+ document.body.classList.add("dark");
+}
+
+
+/* =========================================================
+   PROFİL
+========================================================= */
+
+function initials(name){
+ return String(name||"U")
+ .split(" ")
+ .filter(Boolean)
+ .map(x=>x[0])
+ .slice(0,2)
+ .join("")
+ .toUpperCase();
+}
+
+function updateProfile(){
+
+ if(!currentUser)return;
+
+ document.getElementById("welcome").textContent=
+ "Hoş geldin, "+currentUser.name+" 👋";
+
+ const avatar=document.getElementById("topAvatar");
+ const profileAvatar=document.getElementById("profileAvatar");
+
+ if(currentUser.logo){
+  avatar.innerHTML=`<img src="${currentUser.logo}">`;
+  profileAvatar.innerHTML=`<img src="${currentUser.logo}">`;
+ }else{
+  avatar.textContent=initials(currentUser.name);
+  profileAvatar.textContent=initials(currentUser.name);
+ }
+
+ document.getElementById("profileName").textContent=currentUser.name;
+ document.getElementById("profileUsername").textContent="@"+currentUser.username;
+
+ document.getElementById("editName").value=currentUser.name||"";
+ document.getElementById("editEmail").value=currentUser.email||"";
+ document.getElementById("businessName").value=currentUser.business||"";
+
+ if(currentUser.logo){
+  const p=document.getElementById("logoPreview");
+  p.src=currentUser.logo;
+  p.classList.remove("hidden");
+ }
+
+ updateMenuLogo();
+}
+
+function loadLogo(){
+
+ const file=document.getElementById("logoFile").files[0];
+ if(!file)return;
+
+ const reader=new FileReader();
+
+ reader.onload=e=>{
+  const img=document.getElementById("logoPreview");
+  img.src=e.target.result;
+  img.classList.remove("hidden");
+  currentUser.logo=e.target.result;
+ };
+ reader.readAsDataURL(file);
+}
+
+function updateMenuLogo(){
+
+ const img=document.getElementById("menuLogoPreview");
+
+ if(currentUser&&currentUser.logo){
+  img.src=currentUser.logo;
+  img.classList.remove("hidden");
+ }else{
+  img.classList.add("hidden");
+ }
+}
+
+function saveProfile(){
+
+ const name=document.getElementById("editName").value.trim();
+ const email=document.getElementById("editEmail").value.trim();
+ const business=document.getElementById("businessName").value.trim();
+
+ if(!name||!email){
+  toast("Ad ve e-posta gerekli.");
+  return;
+ }
+
+ let users=getUsers();
+ const u=users.find(x=>x.id===currentUser.id);
+
+ if(!u)return;
+
+ u.name=name;
+ u.email=email;
+ u.business=business;
+ u.logo=currentUser.logo||"";
+
+ currentUser=u;
+
+ saveUsers(users);
+
+ localStorage.setItem(
+  "ht_current_user",
+  JSON.stringify(currentUser)
+ );
+
+ updateProfile();
+
+ toast("Profil kaydedildi.");
+}
+
+
+/* =========================================================
+   GIDA
+========================================================= */
+
+function populateFoodSelects(){
+
+ const select=document.getElementById("calcFood");
+ if(!select)return;
+
+ const list=allFoods();
+
+ select.innerHTML=
+ "<option value=''>Gıda seçin</option>"+
+ list.map((f,i)=>
+  `<option value="${i}">${esc(f.name)} — ${f.cal} kcal / 100 g</option>`
+ ).join("");
+}
+
+function showFoodInfo(){
+
+ const i=Number(document.getElementById("calcFood").value);
+ const f=allFoods()[i];
+
+ if(!f)return;
+
+ document.getElementById("foodResult").innerHTML=
+ `<strong>${esc(f.name)}</strong><br>
+ 100 g: ${f.cal} kcal<br>
+ Protein: ${f.p} g · Karbonhidrat: ${f.c} g · Yağ: ${f.f} g`;
+}
+
+function calculateFood(){
+
+ const i=Number(document.getElementById("calcFood").value);
+ const gram=Number(document.getElementById("calcGram").value);
+
+ const f=allFoods()[i];
+
+ if(!f||gram<=0){
+  toast("Gıda ve miktar gir.");
+  return;
+ }
+
+ const k=gram/100;
+
+ document.getElementById("foodResult").innerHTML=
+ `<strong>${gram} g ${esc(f.name)}</strong><br>
+ <strong>${(f.cal*k).toFixed(1)} kcal</strong><br>
+ Protein: ${(f.p*k).toFixed(1)} g ·
+ Karbonhidrat: ${(f.c*k).toFixed(1)} g ·
+ Yağ: ${(f.f*k).toFixed(1)} g`;
+}
+
+function renderFoodCards(){
+
+ const grid=document.getElementById("foodGrid");
+ if(!grid)return;
+
+ const q=document.getElementById("foodSearch").value
+ .toLowerCase().trim();
+
+ const list=allFoods().filter(
+  f=>f.name.toLowerCase().includes(q)
+ );
+
+ grid.innerHTML=list.map(f=>`
+
+ <div class="food-card">
+  <div class="food-icon">${f.emoji||"🥗"}</div>
+  <div class="food-body">
+   <h3>${esc(f.name)}</h3>
+   <p>
+    <strong>${f.cal} kcal</strong> / 100 g<br>
+    Protein: ${f.p} g<br>
+    Karbonhidrat: ${f.c} g<br>
+    Yağ: ${f.f} g
+   </p>
+  </div>
+ </div>
+
+ `).join("");
+}
+
+function addCustomFood(){
+
+ const name=document.getElementById("customFoodName").value.trim();
+ const cat=document.getElementById("customFoodCat").value;
+ const cal=Number(document.getElementById("customFoodCal").value);
+ const p=Number(document.getElementById("customFoodProtein").value)||0;
+ const c=Number(document.getElementById("customFoodCarb").value)||0;
+ const f=Number(document.getElementById("customFoodFat").value)||0;
+
+ if(!name||cal<=0){
+  toast("Gıda adı ve kalori gerekli.");
+  return;
+ }
+
+ foods.push({
+  id:Date.now(),
+  name,cat,cal,p,c,f,
+  emoji:"🥗"
+ });
+
+ saveData();
+ renderFoodCards();
+ populateFoodSelects();
+
+ log("Gıda eklendi",name);
+
+ toast("Gıda kaydedildi.");
+}
+
+
+/* =========================================================
+   REÇETE OLUŞTURMA
+========================================================= */
+
+function addIngredientRow(data=null){
+
+ const box=document.getElementById("ingredientRows");
+
+ const row=document.createElement("div");
+ row.className="ingredient-row";
+
+ const options=
+ allFoods().map(f=>
+ `<option value="${esc(f.name)}">${esc(f.name)}</option>`
+ ).join("");
+
+ row.innerHTML=`
+
+ <select class="ing-food">
+  <option value="">Malzeme seç</option>
+  ${options}
+ </select>
+
+ <input class="ing-qty" type="number"
+  placeholder="Miktar" min="0" value="${data?.qty||""}">
+
+ <select class="ing-unit">
+  <option ${data?.unit==="g"?"selected":""}>g</option>
+  <option ${data?.unit==="ml"?"selected":""}>ml</option>
+  <option ${data?.unit==="adet"?"selected":""}>adet</option>
+ </select>
+
+ <button class="remove-row" onclick="this.parentElement.remove()">×</button>
+
+ `;
+
+ box.appendChild(row);
+
+ if(data){
+  row.querySelector(".ing-food").value=data.name;
+ }
+}
+
+function readIngredientRows(){
+
+ return [...document.querySelectorAll(".ingredient-row")]
+ .map(row=>({
+  name:row.querySelector(".ing-food").value,
+  qty:Number(row.querySelector(".ing-qty").value)||0,
+  unit:row.querySelector(".ing-unit").value
+ }))
+ .filter(x=>x.name&&x.qty>0);
+}
+
+function calculateIngredients(ingredients){
+
+ let calories=0;
+ let cost=0;
+
+ ingredients.forEach(x=>{
+
+  const f=getFood(x.name);
+
+  if(!f)return;
+
+  calories+=f.cal*(x.qty/100);
+
+  /* Yaklaşık maliyet hesabı.
+     Kullanıcı depo fiyatlarıyla ayrıca takip edebilir. */
+  const stock=stocks.find(
+   s=>s.name.toLowerCase()===x.name.toLowerCase()
+  );
+
+  if(stock){
+   if(stock.unit==="kg"){
+    cost+=stock.price*(x.qty/1000);
+   }else{
+    cost+=stock.price*(x.qty/100);
+   }
+  }else{
+   cost+=f.cal*0.035*(x.qty/100);
+  }
+
+ });
+
+ return {calories,cost};
+}
+
+function calculateRecipe(){
+
+ const ingredients=readIngredientRows();
+ const servings=Number(document.getElementById("recipeServings").value)||1;
+
+ if(!ingredients.length){
+  toast("En az bir malzeme ekle.");
+  return;
+ }
+
+ const r=calculateIngredients(ingredients);
+
+ tempRecipeResult={
+  ingredients,
+  calories:r.calories,
+  cost:r.cost,
+  servings
+ };
+
+ document.getElementById("recipeResult").innerHTML=
+ `<strong>Toplam Reçete</strong><br>
+ Toplam Kalori: ${r.calories.toFixed(1)} kcal<br>
+ Porsiyon: ${servings}<br>
+ Porsiyon Başı Kalori:
+ ${(r.calories/servings).toFixed(1)} kcal<br>
+ Tahmini Toplam Maliyet: ${money(r.cost)}<br>
+ Porsiyon Başı Maliyet: ${money(r.cost/servings)}`;
+}
+
+function saveRecipe(){
+
+ const name=document.getElementById("recipeName").value.trim();
+ const category=document.getElementById("recipeCategory").value;
+ const description=document.getElementById("recipeDescription").value.trim();
+ const servings=Number(document.getElementById("recipeServings").value)||1;
+ const ingredients=readIngredientRows();
+
+ if(!name||!ingredients.length){
+  toast("Yemek adı ve malzemeler gerekli.");
+  return;
+ }
+
+ const calc=calculateIngredients(ingredients);
+
+ recipes.push({
+  id:Date.now(),
+  name,
+  category,
+  description,
+  servings,
+  ingredients,
+  calories:calc.calories,
+  cost:calc.cost,
+  custom:true
+ });
+
+ saveData();
+
+ log("Reçete oluşturuldu",name);
+
+ renderRecipes();
+ populateRecipeSelect();
+
+ toast("Reçete başarıyla kaydedildi.");
+}
+
+function renderRecipes(){
+
+ const grid=document.getElementById("recipeGrid");
+ if(!grid)return;
+
+ const q=document.getElementById("recipeSearch").value
+ .toLowerCase().trim();
+
+ const list=recipes.filter(
+  r=>r.name.toLowerCase().includes(q)
+ );
+
+ if(!list.length){
+  grid.innerHTML=
+  `<div class="card empty">Kayıtlı özel reçete bulunmuyor.</div>`;
+  return;
+ }
+
+ grid.innerHTML=list.map(r=>`
+
+ <article class="recipe-card">
+
+  <div class="recipe-head">
+   <h3>${esc(r.name)}</h3>
+   <p>${esc(r.category||"Ana Yemek")}</p>
+  </div>
+
+  <div class="recipe-body">
+
+   <ul class="ingredients">
+    ${(r.ingredients||[]).slice(0,8).map(i=>
+     `<li>
+      ${esc(i.name)}
+      <strong style="float:right">
+       ${i.qty} ${esc(i.unit)}
+      </strong>
+     </li>`
+    ).join("")}
+   </ul>
+
+   <div class="recipe-meta">
+    <span>🔥 ${Number(r.calories||0).toFixed(0)} kcal</span>
+    <span>💰 ${money(r.cost||0)}</span>
+    <span>👤 ${r.servings||1} porsiyon</span>
+   </div>
+
+   <div class="recipe-actions">
+    <button class="btn small"
+     onclick="useRecipe(${r.id})">
+     Menüye Ekle
+    </button>
+
+    <button class="btn red small"
+     onclick="deleteRecipe(${r.id})">
+     Sil
+    </button>
+   </div>
+
+  </div>
+
+ </article>
+
+ `).join("");
+}
+
+function deleteRecipe(id){
+
+ if(!confirm("Bu reçete silinsin mi?"))return;
+
+ const r=recipes.find(x=>x.id===id);
+
+ recipes=recipes.filter(x=>x.id!==id);
+
+ saveData();
+
+ log("Reçete silindi",r?.name||"");
+
+ renderRecipes();
+ populateRecipeSelect();
+
+ toast("Reçete silindi.");
+}
+
+function useRecipe(id){
+
+ page("menus");
+
+ const select=document.getElementById("menuRecipe");
+ select.value="r_"+id;
+
+ toast("Reçete menüye eklenmek üzere seçildi.");
+}
+
+
+/* =========================================================
+   HAZIR REÇETELERİ DÖNÜŞTÜR
+========================================================= */
+
+function buildDefaultRecipes(){
+
+ const existingNames=new Set(
+  recipes.map(r=>r.name)
+ );
+
+ RECIPES.forEach((r,i)=>{
+
+  if(existingNames.has(r[0]))return;
+
+  let ingredients=r[2];
+
+  if(!Array.isArray(ingredients)){
+   return;
+  }
+
+  const calc=calculateIngredients(ingredients);
+
+  recipes.push({
+   id:"default_"+i,
+   name:r[0],
+   category:r[1],
+   description:"Klasik Türk mutfağından geleneksel yemek.",
+   servings:4,
+   ingredients,
+   calories:calc.calories,
+   cost:calc.cost,
+   default:true
+  });
+
+ });
+
+ saveData();
+}
+
+
+/* =========================================================
+   MENÜ
+========================================================= */
+
+function populateRecipeSelect(){
+
+ const select=document.getElementById("menuRecipe");
+ if(!select)return;
+
+ select.innerHTML=
+ "<option value=''>Yemek seçin</option>"+
+ recipes.map(r=>
+  `<option value="r_${r.id}">
+   ${esc(r.name)}
+  </option>`
+ ).join("");
+}
+
+function addMenuItem(){
+
+ const id=document.getElementById("menuRecipe").value;
+
+ if(!id){
+  toast("Önce yemek seç.");
+  return;
+ }
+
+ const recipe=recipes.find(
+  r=>"r_"+r.id===id
+ );
+
+ if(!recipe)return;
+
+ currentMenuItems.push({
+  id:recipe.id,
+  name:recipe.name,
+  category:recipe.category,
+  calories:recipe.calories,
+  cost:recipe.cost,
+  ingredients:recipe.ingredients
+ });
+
+ updateMenuPreview();
+
+ toast(recipe.name+" menüye eklendi.");
+}
+
+function removeMenuItem(index){
+
+ currentMenuItems.splice(index,1);
+ updateMenuPreview();
+}
+
+function updateMenuPreview(){
+
+ const name=document.getElementById("menuName").value||"Günlük Yemek Menüsü";
+ const date=document.getElementById("menuDate").value;
+ const people=Number(document.getElementById("menuPeople").value)||1;
+
+ document.getElementById("previewMenuName").textContent=name;
+
+ document.getElementById("previewMenuDate").textContent=
+  date?new Date(date+"T12:00").toLocaleDateString("tr-TR",{
+   day:"2-digit",month:"long",year:"numeric"
+  }):"";
+
+ const box=document.getElementById("menuSections");
+
+ if(!currentMenuItems.length){
+  box.innerHTML=
+  `<div class="empty">Menüye henüz yemek eklenmedi.</div>`;
+ }else{
+
+  box.innerHTML=currentMenuItems.map((r,i)=>`
+
+   <div class="menu-section">
+
+    <h3>${esc(r.name)}</h3>
+
+    <div class="menu-line">
+     <span>Kategori</span>
+     <strong>${esc(r.category)}</strong>
+    </div>
+
+    <div style="margin-top:12px">
+     <strong>Malzemeler</strong>
+
+     ${(r.ingredients||[]).map(x=>`
+      <div class="menu-line">
+       <span>${esc(x.name)}</span>
+       <strong>${x.qty} ${esc(x.unit)}</strong>
+      </div>
+     `).join("")}
+
+    </div>
+
+    <div class="actions">
+     <span class="badge orange">
+      ${(r.calories||0).toFixed(0)} kcal / reçete
+     </span>
+
+     <button class="btn red small"
+      onclick="removeMenuItem(${i})">
+      Menüden Çıkar
+     </button>
+    </div>
+
+   </div>
+
+  `).join("");
+ }
+
+ const totalCal=currentMenuItems.reduce(
+  (a,r)=>a+(r.calories||0),0
+ );
+
+ const totalCost=currentMenuItems.reduce(
+  (a,r)=>a+(r.cost||0),0
+ );
+
+ document.getElementById("previewCalories").textContent=
+  (totalCal*people).toFixed(0)+" kcal";
+
+ document.getElementById("previewCost").textContent=
+  money(totalCost*people);
+
+ document.getElementById("previewPer").textContent=
+  money(totalCost);
+}
+
+function saveMenu(){
+
+ if(!currentMenuItems.length){
+  toast("Menüye en az bir yemek ekle.");
+  return;
+ }
+
+ const name=document.getElementById("menuName").value.trim();
+ const date=document.getElementById("menuDate").value;
+ const people=Number(document.getElementById("menuPeople").value)||1;
+
+ const menu={
+  id:Date.now(),
+  name:name||"Günlük Yemek Menüsü",
+  date,
+  people,
+  items:[...currentMenuItems],
+  created:new Date().toLocaleString("tr-TR")
+ };
+
+ menus.push(menu);
+
+ saveData();
+
+ log("Menü kaydedildi",menu.name);
+
+ renderSavedMenus();
+
+ toast("Menü kaydedildi.");
+}
+
+function renderSavedMenus(){
+
+ const box=document.getElementById("savedMenuList");
+ if(!box)return;
+
+ if(!menus.length){
+  box.innerHTML=
+  `<div class="card empty">Henüz kayıtlı menü yok.</div>`;
+  return;
+ }
+
+ box.innerHTML=menus.slice().reverse().map(m=>`
+
+ <div class="card">
+
+  <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
+   <div>
+    <h2>${esc(m.name)}</h2>
+    <p class="subtitle" style="margin:5px 0">
+     ${esc(m.date||"Tarih belirtilmedi")} ·
+     ${m.people} kişi
+    </p>
+   </div>
+
+   <button class="btn red small"
+    onclick="deleteMenu(${m.id})">
+    Sil
+   </button>
+  </div>
+
+  <hr style="border:0;border-top:1px solid var(--border);margin:15px 0">
+
+  ${(m.items||[]).map(r=>`
+   <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+    <strong>${esc(r.name)}</strong>
+    <span style="float:right">
+     ${Number(r.calories||0).toFixed(0)} kcal
+    </span>
+   </div>
+  `).join("")}
+
+ </div>
+
+ `).join("");
+}
+
+function deleteMenu(id){
+
+ if(!confirm("Bu menü silinsin mi?"))return;
+
+ menus=menus.filter(m=>m.id!==id);
+
+ saveData();
+ renderSavedMenus();
+
+ toast("Menü silindi.");
+}
+
+
+/* =========================================================
+   STOK
+========================================================= */
+
+function addStock(){
+
+ const name=document.getElementById("stockName").value.trim();
+ const cat=document.getElementById("stockCat").value;
+ const qty=Number(document.getElementById("stockQty").value);
+ const unit=document.getElementById("stockUnit").value;
+ const price=Number(document.getElementById("stockPrice").value)||0;
+ const min=Number(document.getElementById("stockMin").value)||0;
+
+ if(!name||qty<0){
+  toast("Ürün ve miktar gerekli.");
+  return;
+ }
+
+ stocks.push({
+  id:Date.now(),
+  name,cat,qty,unit,price,min
+ });
+
+ saveData();
+
+ log("Stok eklendi",name);
+
+ renderStocks();
+
+ toast("Ürün depoya eklendi.");
+}
+
+function changeStock(id,amount){
+
+ const s=stocks.find(x=>x.id===id);
+ if(!s)return;
+
+ s.qty=Math.max(0,s.qty+amount);
+
+ saveData();
+ renderStocks();
+ renderCritical();
+}
+
+function deleteStock(id){
+
+ const s=stocks.find(x=>x.id===id);
+
+ stocks=stocks.filter(x=>x.id!==id);
+
+ saveData();
+
+ log("Stok silindi",s?.name||"");
+
+ renderStocks();
+}
+
+function renderStocks(){
+
+ const table=document.getElementById("stockTable");
+ if(!table)return;
+
+ if(!stocks.length){
+  table.innerHTML=
+  `<tr><td colspan="7" class="empty">
+   Depoda ürün bulunmuyor.
+  </td></tr>`;
+  return;
+ }
+
+ table.innerHTML=stocks.slice().reverse().map(s=>{
+
+  const total=s.qty*s.price;
+  const low=s.qty<=s.min;
+
+  return `
+  <tr>
+   <td><strong>${esc(s.name)}</strong></td>
+   <td>${esc(s.cat)}</td>
+   <td>${s.qty} ${esc(s.unit)}</td>
+   <td>${money(s.price)}</td>
+   <td>${money(total)}</td>
+   <td>
+    <span class="badge ${low?"red":"green"}">
+     ${low?"Kritik":"Normal"}
+    </span>
+   </td>
+   <td>
+    <div class="actions">
+     <button class="btn small"
+      onclick="changeStock(${s.id},1)">+1</button>
+     <button class="btn small"
+      onclick="changeStock(${s.id},-1)">-1</button>
+     <button class="btn red small"
+      onclick="deleteStock(${s.id})">Sil</button>
+    </div>
+   </td>
+  </tr>
+  `;
+
+ }).join("");
+}
+
+function renderCritical(){
+
+ const box=document.getElementById("criticalStock");
+ if(!box)return;
+
+ const low=stocks.filter(s=>s.qty<=s.min);
+
+ if(!low.length){
+  box.innerHTML=
+  `<div class="empty">🟢 Kritik stok bulunmuyor.</div>`;
+  return;
+ }
+
+ box.innerHTML=low.map(s=>`
+  <div style="
+   display:flex;
+   justify-content:space-between;
+   padding:12px 0;
+   border-bottom:1px solid var(--border)">
+   <strong>${esc(s.name)}</strong>
+   <span class="badge red">
+    ${s.qty} ${esc(s.unit)}
+   </span>
+  </div>
+ `).join("");
+}
+
+
+/* =========================================================
+   PERSONEL
+========================================================= */
+
+function addStaff(){
+
+ const name=document.getElementById("staffName").value.trim();
+ const role=document.getElementById("staffRole").value.trim();
+ const unit=document.getElementById("staffUnit").value.trim();
+ const note=document.getElementById("staffNote").value.trim();
+
+ if(!name){
+  toast("Ad soyad gerekli.");
+  return;
+ }
+
+ staff.push({
+  id:Date.now(),name,role,unit,note
+ });
+
+ saveData();
+
+ log("Personel eklendi",name);
+
+ renderStaff();
+
+ ["staffName","staffRole","staffUnit","staffNote"]
+ .forEach(id=>document.getElementById(id).value="");
+
+ toast("Personel eklendi.");
+}
+
+function deleteStaff(id){
+
+ const s=staff.find(x=>x.id===id);
+
+ staff=staff.filter(x=>x.id!==id);
+
+ saveData();
+
+ log("Personel silindi",s?.name||"");
+
+ renderStaff();
+}
+
+function renderStaff(){
+
+ const table=document.getElementById("staffTable");
+ if(!table)return;
+
+ if(!staff.length){
+  table.innerHTML=
+  `<tr><td colspan="5" class="empty">
+   Henüz personel eklenmedi.
+  </td></tr>`;
+  return;
+ }
+
+ table.innerHTML=staff.slice().reverse().map(s=>`
+  <tr>
+   <td><strong>${esc(s.name)}</strong></td>
+   <td>${esc(s.role)}</td>
+   <td>${esc(s.unit)}</td>
+   <td>${esc(s.note)}</td>
+   <td>
+    <button class="btn red small"
+     onclick="deleteStaff(${s.id})">Sil</button>
+   </td>
+  </tr>
+ `).join("");
+}
+
+
+/* =========================================================
+   MALİYET
+========================================================= */
+
+function calculateCost(){
+
+ const material=Number(document.getElementById("costMaterial").value)||0;
+ const people=Number(document.getElementById("costPeople").value)||0;
+ const extra=Number(document.getElementById("costExtra").value)||0;
+ const waste=Number(document.getElementById("costWaste").value)||0;
+
+ if(people<=0){
+  toast("Kişi sayısı gir.");
+  return;
+ }
+
+ const base=material+extra;
+ const total=base+(base*waste/100);
+ const per=total/people;
+
+ document.getElementById("costResult").innerHTML=
+ `<strong>Toplam Maliyet:</strong> ${money(total)}<br>
+ <strong>Kişi Başı:</strong> ${money(per)}<br>
+ <strong>Kişi Sayısı:</strong> ${people}`;
+
+ log("Maliyet hesaplandı",money(total));
+}
+
+
+/* =========================================================
+   GEÇMİŞ
+========================================================= */
+
+function renderHistory(){
+
+ const table=document.getElementById("historyTable");
+ if(!table)return;
+
+ if(!history.length){
+  table.innerHTML=
+  `<tr><td colspan="3" class="empty">
+   Henüz işlem yok.
+  </td></tr>`;
+  return;
+ }
+
+ table.innerHTML=history.slice(0,50).map(h=>`
+  <tr>
+   <td><strong>${esc(h.action)}</strong></td>
+   <td>${esc(h.detail)}</td>
+   <td>${esc(h.time)}</td>
+  </tr>
+ `).join("");
+}
+
+function clearHistory(){
+
+ if(!confirm("Geçmiş temizlensin mi?"))return;
+
+ history=[];
+ saveData();
+ renderHistory();
+
+ toast("Geçmiş temizlendi.");
+}
+
+
+/* =========================================================
+   YEDEK
+========================================================= */
+
+function exportData(){
+
+ const data={
+  user:currentUser,
+  foods,
+  recipes,
+  menus,
+  stocks,
+  staff,
+  history,
+  exportDate:new Date().toISOString()
+ };
+
+ const blob=new Blob(
+  [JSON.stringify(data,null,2)],
+  {type:"application/json"}
+ );
+
+ const url=URL.createObjectURL(blob);
+
+ const a=document.createElement("a");
+ a.href=url;
+ a.download="hesaplatr-yedek.json";
+ a.click();
+
+ URL.revokeObjectURL(url);
+
+ toast("Yedek oluşturuldu.");
+}
+
+
+/* =========================================================
+   GENEL
+========================================================= */
+
+function updateAll(){
+
+ if(!currentUser)return;
+
+ updateProfile();
+
+ populateFoodSelects();
+ renderFoodCards();
+
+ renderRecipes();
+ populateRecipeSelect();
+
+ renderStocks();
+ renderStaff();
+ renderSavedMenus();
+ renderHistory();
+ renderCritical();
+
+ document.getElementById("dashRecipes").textContent=recipes.length;
+ document.getElementById("dashFoods").textContent=allFoods().length;
+ document.getElementById("dashStock").textContent=stocks.length;
+ document.getElementById("dashMenus").textContent=menus.length;
+
+ updateMenuPreview();
+}
+
+
+/* =========================================================
+   BAŞLANGIÇ
+========================================================= */
+
+document.getElementById("menuDate").value=
+ new Date().toISOString().split("T")[0];
+
+addIngredientRow();
+
+buildDefaultRecipes();
+
+if(currentUser){
+ openApp();
+}
+
+</script>
+
+</body>
+</html>
